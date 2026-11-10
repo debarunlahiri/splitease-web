@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { GET_APP_HREF, SITE_URL } from '@/lib/config';
 import Icon from '@/components/Icon';
+import { BrandLogo, BRAND_LOGO_SRC } from '@/components/BrandLogo';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -13,11 +14,16 @@ export const metadata: Metadata = {
   },
   description:
     'SplitEase tracks who paid, who owes and the fewest payments to settle up. Perfect for trips, flatmates and shared costs.',
+  icons: {
+    icon: BRAND_LOGO_SRC,
+    apple: BRAND_LOGO_SRC,
+  },
   openGraph: {
     type: 'website',
     siteName: 'SplitEase',
     title: 'SplitEase: split expenses with friends',
     description: 'Track shared expenses, see who owes what and settle up with the fewest payments.',
+    images: [{ url: BRAND_LOGO_SRC, width: 512, height: 512, alt: 'SplitEase logo' }],
   },
 };
 
@@ -34,9 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <header className="site-header">
           <div className="container header-row">
             <Link href="/" className="brand" aria-label="SplitEase home">
-              <span className="brand-mark" aria-hidden="true">
-                <Icon name="brand" size={21} />
-              </span>
+              <BrandLogo size={38} />
               SplitEase
             </Link>
             <nav className="nav" aria-label="Main">
@@ -56,9 +60,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <div className="container footer-row">
             <div className="footer-brand">
               <Link href="/" className="brand">
-                <span className="brand-mark">
-                  <Icon name="brand" size={18} />
-                </span>
+                <BrandLogo size={32} />
                 SplitEase
               </Link>
               <p>&copy; {new Date().getFullYear()} SplitEase</p>

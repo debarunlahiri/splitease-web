@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Icon from '@/components/Icon';
+import { BrandLogo } from '@/components/BrandLogo';
 import { IosAvailability } from '@/components/IosUpdates';
 import { GET_APP_HREF } from '@/lib/config';
 
@@ -124,7 +125,7 @@ export default function Home() {
         <div className="container hero-grid">
           <div className="hero-copy">
             <span className="eyebrow">
-              <Icon name="brand" size={15} /> Shared expenses, simplified
+              <BrandLogo size={20} /> Shared expenses, simplified
             </span>
             <h1>
               Split expenses.

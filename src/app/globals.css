@@ -84,13 +84,9 @@ svg {
 }
 
 .brand-mark {
-  display: grid;
-  width: 38px;
-  height: 38px;
-  place-items: center;
-  border-radius: 12px;
-  background: var(--pine);
-  color: var(--lime);
+  display: block;
+  flex: none;
+  border-radius: 28%;
 }
 
 .nav {
@@ -122,11 +118,6 @@ svg {
 }
 .footer-brand .brand {
   font-size: 18px;
-}
-.footer-brand .brand-mark {
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
 }
 .footer-row p {
   margin: 0;

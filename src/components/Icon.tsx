@@ -1,11 +1,6 @@
 import type { ReactNode } from 'react';
 
 const shapes = {
-  brand: (
-    <>
-      <path d="M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4" />
-    </>
-  ),
   arrow: <path d="M4 12h15m-6-6 6 6-6 6" />,
   down: <path d="M12 4v15m-6-6 6 6 6-6" />,
   chevron: <path d="m6 9 6 6 6-6" />,
