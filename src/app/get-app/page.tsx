@@ -22,7 +22,11 @@ export default function GetAppPage() {
                 Download SplitEase for Android, install it, then open your link again.
               </p>
               <div className="actions">
-                <a className="btn btn-primary" href={APK_URL} download>
+                <a
+                  className="btn btn-primary"
+                  href={APK_URL}
+                  {...(/\.apk(\?|$)/i.test(APK_URL) ? { download: true } : {})}
+                >
                   Download for Android <Icon name="down" size={18} />
                 </a>
               </div>

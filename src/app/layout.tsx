@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { GET_APP_HREF, SITE_URL } from '@/lib/config';
 import Icon from '@/components/Icon';
+import SiteShell from '@/components/SiteShell';
 import { BrandLogo, BRAND_LOGO_SRC } from '@/components/BrandLogo';
 import './globals.css';
 
@@ -37,6 +38,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>
+        <SiteShell
+          header={
         <header className="site-header">
           <div className="container header-row">
             <Link href="/" className="brand" aria-label="SplitEase home">
@@ -53,9 +56,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </nav>
           </div>
         </header>
-
-        {children}
-
+          }
+          footer={
         <footer className="site-footer">
           <div className="container footer-row">
             <div className="footer-brand">
@@ -73,6 +75,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </p>
           </div>
         </footer>
+          }
+        >
+          {children}
+        </SiteShell>
       </body>
     </html>
   );
