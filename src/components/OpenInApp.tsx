@@ -4,7 +4,7 @@ import FlowCard from '@/components/FlowCard';
 import Icon from '@/components/Icon';
 import IosUpdates from '@/components/IosUpdates';
 import { useEffect, useState } from 'react';
-import { GET_APP_HREF } from '@/lib/config';
+import { APK_URL } from '@/lib/config';
 import { detectPlatform, isInAppBrowser, type Platform } from '@/lib/device';
 import { type AppHost, androidIntentLink, customSchemeLink } from '@/lib/links';
 
@@ -51,11 +51,8 @@ export default function OpenInApp({
     setInAppBrowser(isInAppBrowser(agent));
     if (detected !== 'android') return;
 
-    // Without the app installed, Chrome lands on the install page.
-    const fallback = GET_APP_HREF.startsWith('http')
-      ? GET_APP_HREF
-      : `${window.location.origin}${GET_APP_HREF}`;
-    const intent = androidIntentLink(host, fallback, token);
+    // Without the app installed, Chrome goes to the download page (never the Play Store).
+    const intent = androidIntentLink(host, APK_URL, token);
     setIntentUrl(intent);
     if (!autoOpen) return;
 
@@ -69,8 +66,8 @@ export default function OpenInApp({
       // Storage can be blocked; the button still works.
     }
     if (alreadyTried) return;
-    // Keep the landing page available when the browser requires a tap or the app is missing.
-    window.location.assign(androidIntentLink(host, undefined, token));
+    // If the app is missing, the browser continues to the download page.
+    window.location.assign(intent);
   }, [host, token, autoOpen]);
 
   async function copyLink() {
@@ -110,7 +107,7 @@ export default function OpenInApp({
             </p>
           )}
           <p className="note">
-            Don&apos;t have SplitEase yet? <a href={GET_APP_HREF}>Install the app</a>, then open
+            Don&apos;t have SplitEase yet? <a href={APK_URL}>Get the app</a>, then open
             this link again.
           </p>
         </>

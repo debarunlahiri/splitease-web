@@ -1,5 +1,3 @@
-import { ANDROID_PACKAGE } from './config';
-
 /** The same shape the app and the backend use for invite tokens. */
 export const TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 
@@ -16,13 +14,14 @@ export function customSchemeLink(host: AppHost, token?: string): string {
 }
 
 /**
- * Android "intent" link. Pass a fallback for an explicit tap that can offer installation.
- * An automatic attempt leaves the visitor on the landing page if the browser blocks it.
+ * Android "intent" link that opens the app through its splitease:// scheme.
+ *
+ * It deliberately has no `package=` part. When an intent names a package that is not installed,
+ * Chrome sends the visitor to the Play Store, where SplitEase is not listed. Without a package
+ * there is nothing to look up, so a visitor without the app continues to `fallbackUrl`
+ * (the Appverse page) instead.
  */
-export function androidIntentLink(host: AppHost, fallbackUrl?: string, token?: string): string {
-  const fallback = fallbackUrl ? `S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};` : '';
-  return (
-    `intent://${host}${query(token)}#Intent;scheme=splitease;package=${ANDROID_PACKAGE};` +
-    `${fallback}end`
-  );
+export function androidIntentLink(host: AppHost, fallbackUrl: string, token?: string): string {
+  const fallback = `S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};`;
+  return `intent://${host}${query(token)}#Intent;scheme=splitease;${fallback}end`;
 }
