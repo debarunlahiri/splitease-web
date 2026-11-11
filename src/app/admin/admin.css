@@ -1015,3 +1015,155 @@
     height: 600px;
   }
 }
+
+/* ===================================================================== theme */
+.adm-root {
+  background: var(--paper);
+  color: var(--ink);
+}
+.adm-theme {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 10%);
+}
+.adm-theme button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #d3e5da;
+  font: 650 13px var(--font);
+  cursor: pointer;
+}
+.adm-theme button[aria-pressed='true'] {
+  background: var(--lime);
+  color: #153f33;
+}
+.adm-hits button {
+  color: var(--ink);
+}
+
+/* ===================================================================== dark theme */
+html[data-adm-theme='dark'] .adm-root {
+  --ink: #e7efe9; --muted: #9fb2a8; --pine: #7ed3b0; --green: #5fc9a0; --mint: #20312a;
+  --paper: #0e1512; --card: #16211c; --line: #2b3a33; --red: #ff8f84;
+  color-scheme: dark;
+}
+html[data-adm-theme='dark'] .adm-side {
+  background: #0a1f19; border-right: 1px solid var(--line);
+}
+html[data-adm-theme='dark'] .adm-side nav a.is-active {
+  color: #153f33;
+}
+html[data-adm-theme='dark'] .adm-note,
+html[data-adm-theme='dark'] .adm-viewer {
+  background: #1d2a24;
+}
+html[data-adm-theme='dark'] .adm-viewer {
+  background: #101814;
+}
+html[data-adm-theme='dark'] .adm-alert {
+  background: #3a1f1c;
+}
+html[data-adm-theme='dark'] .adm input,
+html[data-adm-theme='dark'] .adm textarea,
+html[data-adm-theme='dark'] .adm-login input {
+  border-color: #4a5d54; background: #101814;
+}
+html[data-adm-theme='dark'] select,
+html[data-adm-theme='dark'] .adm select {
+  border-color: #4a5d54; background-color: #101814; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239fb2a8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+}
+html[data-adm-theme='dark'] .adm-badge {
+  background: #2a3731; color: #c9d6cf;
+}
+html[data-adm-theme='dark'] .adm-badge-good {
+  background: #1d3b2e; color: #8fe0b9;
+}
+html[data-adm-theme='dark'] .adm-badge-warn {
+  background: #3b3118; color: #f0cd7a;
+}
+html[data-adm-theme='dark'] .adm-badge-bad {
+  background: #44201c; color: #ff9a8f;
+}
+html[data-adm-theme='dark'] .adm-btn {
+  border-color: #3d5148;
+}
+html[data-adm-theme='dark'] .adm-btn-primary,
+html[data-adm-theme='dark'] .adm-tabs button[aria-selected='true'] {
+  border-color: transparent; background: #2e8b6c; color: #fff;
+}
+html[data-adm-theme='dark'] .adm-btn-primary:hover:not(:disabled) {
+  background: #37a07d;
+}
+html[data-adm-theme='dark'] .adm-btn-danger {
+  border-color: transparent; background: #c0453a; color: #fff;
+}
+html[data-adm-theme='dark'] .adm-btn-danger:hover:not(:disabled) {
+  background: #d4554a;
+}
+html[data-adm-theme='dark'] .adm-btn-danger-outline {
+  border-color: #6b3a35;
+}
+html[data-adm-theme='dark'] .adm-btn-danger-outline:hover:not(:disabled) {
+  background: #3a1f1c;
+}
+html[data-adm-theme='dark'] .adm-btn-warn {
+  border-color: #6b5a2b; color: #f0cd7a;
+}
+html[data-adm-theme='dark'] .adm-btn-warn:hover:not(:disabled) {
+  background: #3b3118;
+}
+html[data-adm-theme='dark'] .adm-icon-btn:hover {
+  background: rgb(255 255 255 / 8%);
+}
+html[data-adm-theme='dark'] .adm-modal-backdrop {
+  background: rgb(0 0 0 / 65%);
+}
+html[data-adm-theme='dark'] .adm-modal {
+  border: 1px solid var(--line); box-shadow: 0 24px 64px rgb(0 0 0 / 60%);
+}
+html[data-adm-theme='dark'] .adm-toast {
+  background: #24382f; border: 1px solid #36504a; color: #e7efe9;
+}
+html[data-adm-theme='dark'] .adm-toast-bad {
+  background: #7a2a23; border-color: #a03a31; color: #fff;
+}
+html[data-adm-theme='dark'] .adm-scrim {
+  background: rgb(0 0 0 / 60%);
+}
+html[data-adm-theme='dark'] .adm-login {
+  background: radial-gradient(ellipse at 50% 20%, #17261f, transparent 68%), var(--paper);
+}
+html[data-adm-theme='dark'] .adm-login-card {
+  box-shadow: 0 20px 52px rgb(0 0 0 / 45%);
+}
+html[data-adm-theme='dark'] .adm-stat,
+html[data-adm-theme='dark'] .adm-card,
+html[data-adm-theme='dark'] .adm-table-wrap,
+html[data-adm-theme='dark'] .adm-table tr {
+  border-color: var(--line);
+}
+html[data-adm-theme='dark'] .adm-table tr + tr td,
+html[data-adm-theme='dark'] .adm-list li + li,
+html[data-adm-theme='dark'] .adm-table td + td {
+  border-color: var(--line);
+}
+html[data-adm-theme='dark'] .adm-empty {
+  border-color: var(--line);
+}
+html[data-adm-theme='dark'] .adm-template {
+  color: var(--ink);
+}
+html[data-adm-theme='dark'] .adm-template:hover,
+html[data-adm-theme='dark'] .adm-hits button:hover {
+  background: var(--mint);
+}
+html[data-adm-theme='dark'] .adm-picked,
+html[data-adm-theme='dark'] .adm-file,
+html[data-adm-theme='dark'] .adm-thumb {
+  border-color: var(--line);
+}

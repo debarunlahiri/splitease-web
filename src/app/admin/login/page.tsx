@@ -35,6 +35,7 @@ export default function AdminLogin() {
   }
 
   return (
+    <div className="adm-root">
     <main className="adm-login">
       <form className="adm-login-card" onSubmit={submit}>
         <BrandLogo size={48} />
@@ -64,5 +65,6 @@ export default function AdminLogin() {
         </button>
       </form>
     </main>
+    </div>
   );
 }

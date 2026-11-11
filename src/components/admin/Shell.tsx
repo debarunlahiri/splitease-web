@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { signOut } from './api';
 import { FeedbackProvider } from './Feedback';
+import ThemeToggle from './ThemeToggle';
 
 const ICONS: Record<string, ReactNode> = {
   overview: <path d="M4 13h6V4H4v9Zm0 7h6v-5H4v5Zm10 0h6v-9h-6v9Zm0-16v5h6V4h-6Z" />,
@@ -111,6 +112,7 @@ export default function Shell({ children }: { children: ReactNode }) {
 
   let lastGroup = '';
   return (
+    <div className="adm-root">
     <FeedbackProvider>
       <div className="adm">
         <aside id="adm-drawer" className={`adm-side${open ? ' is-open' : ''}`}>
@@ -136,6 +138,7 @@ export default function Shell({ children }: { children: ReactNode }) {
               );
             })}
           </nav>
+          <ThemeToggle />
           <button type="button" className="adm-signout" onClick={() => void signOut()}>
             Sign out
           </button>
@@ -163,5 +166,6 @@ export default function Shell({ children }: { children: ReactNode }) {
         </div>
       </div>
     </FeedbackProvider>
+    </div>
   );
 }
