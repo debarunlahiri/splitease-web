@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
+import { BACKEND_URL } from '@/lib/backend';
 import { TOKEN_PATTERN } from '@/lib/links';
 
-const API_URL = (process.env.API_URL ?? 'http://localhost:9890').replace(/\/+$/, '');
+const API_URL = BACKEND_URL;
 
 export async function POST(request: Request) {
   let body: { email?: unknown; token?: unknown } | null;

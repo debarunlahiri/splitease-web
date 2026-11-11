@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
+import { BACKEND_URL } from '@/lib/backend';
 
 export const dynamic = 'force-dynamic';
 
-const API_URL = (process.env.API_URL ?? 'http://localhost:9890').replace(/\/+$/, '');
+const API_URL = BACKEND_URL;
 
 /**
  * Passes an email-verification token to the SplitEase backend. The browser calls this route
