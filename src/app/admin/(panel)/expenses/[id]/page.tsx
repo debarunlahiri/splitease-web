@@ -26,13 +26,35 @@ interface ExpenseDetail {
   category: string | null;
   notes: string | null;
   splitType: string;
+  remindAfterDays: number | null;
+  payByDate: string | null;
+  reminderSentAt: string | null;
   createdAt: string;
   updatedAt: string | null;
   deletedAt: string | null;
   paidBy: { id: string; name: string | null; email: string | null };
-  shares: { userId: string; name: string | null; email: string | null; amount: string }[];
+  shares: {
+    userId: string;
+    name: string | null;
+    email: string | null;
+    isContact: boolean;
+    upiId: string | null;
+    amount: string;
+    paidAmount: string;
+    dueDate: string | null;
+    status: 'PAID' | 'PARTIAL' | 'UNPAID';
+    isPayer: boolean;
+  }[];
+  claims: { id: string; userId: string; name: string | null; amount: string; status: 'PENDING' | 'CONFIRMED' | 'REJECTED'; createdAt: string; resolvedAt: string | null }[];
   attachments: Attachment[];
-  history: { action: string; revision: number; actor: string | null; at: string }[];
+  history: {
+    action: string;
+    revision: number;
+    actor: string | null;
+    at: string;
+    summary: string;
+    changes: { field: string; label: string; kind: 'ADDED' | 'REMOVED' | 'CHANGED'; from: string | null; to: string | null }[];
+  }[];
 }
 
 const fileUrl = (id: string) => `/api/admin/proxy/attachments/${id}`;
@@ -82,6 +104,12 @@ export default function ExpenseDetailPage() {
         <Stat label="Category" value={data.category ?? '—'} />
         <Stat label="Split" value={data.splitType.toLowerCase().replace('_', ' ')} />
         <Stat label="Added" value={formatDate(data.createdAt)} hint={data.updatedAt ? `edited ${formatDate(data.updatedAt)}` : undefined} />
+        <Stat label="Pay by" value={data.payByDate ? formatDate(data.payByDate) : '—'} />
+        <Stat
+          label="Auto-remind"
+          value={data.remindAfterDays ? `After ${data.remindAfterDays} days` : 'Off'}
+          hint={data.reminderSentAt ? `sent ${formatDate(data.reminderSentAt, true)}` : undefined}
+        />
       </div>
 
       {data.notes && (
@@ -145,17 +173,65 @@ export default function ExpenseDetailPage() {
 
       <section className="adm-card">
         <h2>Who owes what</h2>
-        <ul className="adm-list">
-          {data.shares.map((s) => (
-            <li key={s.userId}>
-              <span>
-                <Link href={`/admin/users/${s.userId}`}>{s.name ?? s.userId}</Link>{' '}
-                <span className="adm-muted">{s.email}</span>
-              </span>
-              <strong>{formatMoney(s.amount, data.currency)}</strong>
-            </li>
-          ))}
-        </ul>
+        <div className="adm-table-wrap">
+          <table className="adm-table">
+            <thead>
+              <tr>
+                <th>Person</th>
+                <th className="num">Share</th>
+                <th className="num">Paid</th>
+                <th>Status</th>
+                <th>Due</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.shares.map((s) => {
+                const overdue = !s.isPayer && s.status !== 'PAID' && s.dueDate && new Date(s.dueDate) < new Date(new Date().toDateString());
+                return (
+                  <tr key={s.userId}>
+                    <td>
+                      <Link href={`/admin/users/${s.userId}`}>{s.name ?? s.userId}</Link>{' '}
+                      {s.isPayer && <Badge tone="neutral">Paid the bill</Badge>}{' '}
+                      {s.isContact && <Badge tone="warn">Contact</Badge>}
+                      <div className="adm-muted">{s.email ?? ''}{s.upiId ? ` UPI ${s.upiId}` : ''}</div>
+                    </td>
+                    <td className="num">{formatMoney(s.amount, data.currency)}</td>
+                    <td className="num">{formatMoney(s.paidAmount, data.currency)}</td>
+                    <td>
+                      <Badge tone={s.status === 'PAID' ? 'good' : s.status === 'PARTIAL' ? 'warn' : 'bad'}>{s.status.toLowerCase()}</Badge>
+                    </td>
+                    <td>{s.isPayer ? '—' : s.dueDate ? <span className={overdue ? 'adm-bad' : undefined}>{formatDate(s.dueDate)}{overdue ? ' · overdue' : ''}</span> : '—'}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="adm-card">
+        <h2>Payment claims ({data.claims.length})</h2>
+        {data.claims.length === 0 ? (
+          <p className="adm-muted">Nobody has said they paid yet.</p>
+        ) : (
+          <ul className="adm-list">
+            {data.claims.map((c) => (
+              <li key={c.id}>
+                <span>
+                  <Link href={`/admin/users/${c.userId}`}>{c.name ?? c.userId}</Link> says they paid{' '}
+                  <strong>{formatMoney(c.amount, data.currency)}</strong>{' '}
+                  <Badge tone={c.status === 'CONFIRMED' ? 'good' : c.status === 'REJECTED' ? 'bad' : 'warn'}>
+                    {c.status === 'REJECTED' ? 'not received' : c.status.toLowerCase()}
+                  </Badge>
+                </span>
+                <span className="adm-muted">
+                  {formatDate(c.createdAt, true)}
+                  {c.resolvedAt ? ` → ${formatDate(c.resolvedAt, true)}` : ''}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section className="adm-card">
@@ -163,14 +239,30 @@ export default function ExpenseDetailPage() {
         {data.history.length === 0 ? (
           <p className="adm-muted">No history recorded.</p>
         ) : (
-          <ul className="adm-list">
+          <ul className="adm-timeline">
             {data.history.map((h) => (
               <li key={h.revision}>
-                <span>
-                  <Badge tone={h.action === 'DELETED' ? 'bad' : h.action === 'CREATED' ? 'good' : 'neutral'}>{h.action.toLowerCase()}</Badge>{' '}
-                  <span className="adm-muted">by {h.actor ?? 'unknown'}</span>
-                </span>
-                <span className="adm-muted">{formatDate(h.at, true)}</span>
+                <div className="adm-timeline-head">
+                  <span>
+                    <Badge tone={h.action === 'DELETED' ? 'bad' : h.action === 'CREATED' ? 'good' : h.action === 'PAYMENT_RECORDED' ? 'warn' : 'neutral'}>
+                      {h.action.toLowerCase().replace('_', ' ')}
+                    </Badge>{' '}
+                    {h.summary}
+                  </span>
+                  <span className="adm-muted">{formatDate(h.at, true)} · rev {h.revision}</span>
+                </div>
+                {h.changes.length > 0 && (
+                  <ul className="adm-changes">
+                    {h.changes.map((c) => (
+                      <li key={c.field}>
+                        <span className="adm-muted">{c.label}</span>{' '}
+                        {c.from && <s>{c.from}</s>}
+                        {c.from && c.to && ' → '}
+                        {c.to && <strong>{c.to}</strong>}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>

@@ -14,7 +14,17 @@ interface GroupDetail {
   currency: string;
   createdAt: string;
   settlements: number;
-  members: { id: string; displayName: string; email: string; role: string; joinedAt: string }[];
+  members: {
+    id: string;
+    displayName: string;
+    email: string | null;
+    isContact: boolean;
+    phone: string | null;
+    upiId: string | null;
+    role: string;
+    joinedAt: string;
+  }[];
+  progress: { currency: string; people: number; settled: number; pending: string; collected: string }[];
   totals: { currency: string; count: number; total: string }[];
   recentExpenses: {
     id: string;
@@ -152,6 +162,14 @@ export default function GroupDetailPage() {
             {data.totals.map((t) => (
               <Stat key={t.currency} label={`Spent (${t.currency})`} value={formatMoney(t.total, t.currency)} hint={`${t.count} expenses`} />
             ))}
+            {data.progress.map((p) => (
+              <Stat
+                key={`p-${p.currency}`}
+                label={`Still to settle (${p.currency})`}
+                value={formatMoney(p.pending, p.currency)}
+                hint={`${p.settled}/${p.people} paid · ${formatMoney(p.collected, p.currency)} collected`}
+              />
+            ))}
           </div>
 
           <section className="adm-card">
@@ -161,7 +179,9 @@ export default function GroupDetailPage() {
                 <li key={m.id}>
                   <span>
                     <Link href={`/admin/users/${m.id}`}>{m.displayName}</Link>{' '}
-                    <span className="adm-muted">{m.email}</span>
+                    {m.isContact && <Badge tone="warn">Contact · not on SplitEase</Badge>}{' '}
+                    <span className="adm-muted">{m.email ?? m.phone ?? ''}</span>
+                    {m.upiId && <span className="adm-muted"> · UPI {m.upiId}</span>}
                   </span>
                   <span className="adm-muted">
                     {m.role.toLowerCase()} · joined {formatDate(m.joinedAt)}

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
-import { api, formatDate, useApi } from '@/components/admin/api';
+import { api, formatDate, formatMoney, useApi } from '@/components/admin/api';
 import { Modal, useAction, useFeedback } from '@/components/admin/Feedback';
 import { Badge, PageHeader, Stat, Status } from '@/components/admin/ui';
 
@@ -16,6 +16,14 @@ interface UserDetail {
   disabledAt: string | null;
   disabledReason: string | null;
   google: boolean;
+  upiId: string | null;
+  upiVerifiedAt: string | null;
+  isContact: boolean;
+  contact: { email: string | null; phone: string | null; addedBy: string | null } | null;
+  claimsMade: number;
+  claimsReceived: number;
+  templates: number;
+  balances: { currency: string; owed: string; owes: string }[];
   expensesPaid: number;
   friends: number;
   activeSessions: number;
@@ -69,8 +77,13 @@ export default function UserDetailPage() {
       </p>
       <PageHeader
         title={data.displayName}
-        subtitle={data.email}
-        actions={suspended ? <Badge tone="bad">Suspended</Badge> : undefined}
+        subtitle={data.email || data.contact?.phone || (data.isContact ? 'Added from contacts' : '')}
+        actions={
+          <>
+            {data.isContact && <Badge tone="warn">Contact · not on SplitEase</Badge>}
+            {suspended && <Badge tone="bad">Suspended</Badge>}
+          </>
+        }
       />
 
       {suspended && (
@@ -90,8 +103,47 @@ export default function UserDetailPage() {
         <Stat label="Expenses paid" value={data.expensesPaid} />
         <Stat label="Friends" value={data.friends} />
         <Stat label="Signed-in devices" value={data.activeSessions} />
-        <Stat label="Sign-in" value={data.google ? 'Google' : 'Email'} />
+        <Stat label="Sign-in" value={data.isContact ? 'None (contact)' : data.google ? 'Google' : 'Email'} />
+        <Stat
+          label="UPI ID"
+          value={data.upiId ?? '—'}
+          hint={data.upiId ? (data.upiVerifiedAt ? `verified ${formatDate(data.upiVerifiedAt)}` : 'not verified') : undefined}
+        />
+        {data.balances.map((b) => (
+          <Stat
+            key={b.currency}
+            label={`Is owed / owes (${b.currency})`}
+            value={`${formatMoney(b.owed, b.currency)} / ${formatMoney(b.owes, b.currency)}`}
+            hint="still unpaid, all groups"
+          />
+        ))}
+        <Stat label="Payment claims" value={`${data.claimsMade} made`} hint={`${data.claimsReceived} received · ${data.templates} templates`} />
       </div>
+
+      {data.contact && (
+        <section className="adm-card">
+          <h2>Contact details</h2>
+          <p className="adm-muted">
+            Added to a group from someone&apos;s phone contacts. They have no login until they accept an invitation.
+          </p>
+          <ul className="adm-list">
+            <li>
+              <span>Email</span>
+              <strong>{data.contact.email ?? '—'}</strong>
+            </li>
+            <li>
+              <span>Phone</span>
+              <strong>{data.contact.phone ?? '—'}</strong>
+            </li>
+            {data.contact.addedBy && (
+              <li>
+                <span>Added by</span>
+                <Link href={`/admin/users/${data.contact.addedBy}`}>View user</Link>
+              </li>
+            )}
+          </ul>
+        </section>
+      )}
 
       <section className="adm-card">
         <h2>Actions</h2>
@@ -102,12 +154,14 @@ export default function UserDetailPage() {
           <button type="button" className="adm-btn" onClick={() => { setTitle(''); setMessage(''); setDialog('notify'); }}>
             Send notification
           </button>
+          {data.email && (
           <Link
             className="adm-btn"
             href={`/admin/mail?user=${data.id}&name=${encodeURIComponent(data.displayName)}&email=${encodeURIComponent(data.email)}`}
           >
             Send email
           </Link>
+          )}
           {!data.emailVerifiedAt && (
             <>
               <button

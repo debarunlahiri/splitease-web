@@ -1167,3 +1167,30 @@ html[data-adm-theme='dark'] .adm-file,
 html[data-adm-theme='dark'] .adm-thumb {
   border-color: var(--line);
 }
+
+.adm-timeline {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.adm-timeline-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  justify-content: space-between;
+}
+.adm-changes {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--adm-surface-2, rgb(127 127 127 / 10%));
+  list-style: none;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+.adm-changes s {
+  opacity: 0.7;
+}

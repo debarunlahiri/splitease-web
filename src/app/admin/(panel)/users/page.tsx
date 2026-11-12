@@ -7,7 +7,7 @@ import { Badge, Empty, PageHeader, Pager, Status } from '@/components/admin/ui';
 
 interface UserRow {
   id: string;
-  email: string;
+  email: string | null;
   displayName: string;
   createdAt: string;
   emailVerified: boolean;
@@ -15,6 +15,9 @@ interface UserRow {
   suspended: boolean;
   groups: number;
   premium: boolean;
+  isContact: boolean;
+  upiId: string | null;
+  upiVerified: boolean;
 }
 
 export default function UsersPage() {
@@ -81,6 +84,8 @@ export default function UsersPage() {
                         <Badge tone={u.emailVerified ? 'good' : 'warn'}>{u.emailVerified ? 'Verified' : 'Unverified'}</Badge>
                         {u.suspended && <Badge tone="bad">Suspended</Badge>}
                         {u.premium && <Badge tone="good">Premium</Badge>}
+                        {u.isContact && <Badge tone="warn">Contact</Badge>}
+                        {u.upiId && <Badge tone={u.upiVerified ? 'good' : 'neutral'}>{u.upiVerified ? 'UPI ✓' : 'UPI'}</Badge>}
                         {u.google && <Badge>Google</Badge>}
                       </td>
                       <td className="num">{u.groups}</td>

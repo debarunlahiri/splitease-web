@@ -17,7 +17,16 @@ interface Overview {
     iosWaitlist: number;
     emailsPending: number;
     emailsFailed: number;
+    claimsPending: number;
+    claimsRejected30d: number;
+    payLinksActive: number;
+    usersWithUpi: number;
+    usersUpiVerified: number;
+    contactMembers: number;
+    templates: number;
+    overdueShares: number;
   };
+  outstanding: { currency: string; pending: string; collected: string }[];
   signups: { day: string; count: number }[];
   expenseVolume: { currency: string; count: number; total: string }[];
   subscriptionRevenue: { currency: string; total: string; count: number }[];
@@ -67,6 +76,12 @@ export default function OverviewPage() {
             <Stat label="Expenses" value={formatNumber(t.expenses)} hint={`${formatNumber(t.settlements)} settlements`} />
             <Stat label="Active subscriptions" value={formatNumber(t.activeSubscriptions)} />
             <Stat label="iOS waitlist" value={formatNumber(t.iosWaitlist)} />
+            <Stat label="Claims to confirm" value={formatNumber(t.claimsPending)} hint={`${formatNumber(t.claimsRejected30d)} not received (30 days)`} />
+            <Stat label="Overdue payments" value={formatNumber(t.overdueShares)} />
+            <Stat label="UPI IDs" value={formatNumber(t.usersWithUpi)} hint={`${formatNumber(t.usersUpiVerified)} verified`} />
+            <Stat label="Active pay links" value={formatNumber(t.payLinksActive)} />
+            <Stat label="Contacts added" value={formatNumber(t.contactMembers)} hint="not on SplitEase yet" />
+            <Stat label="Saved templates" value={formatNumber(t.templates)} />
           </div>
 
           <div className="adm-grid-2">
@@ -85,6 +100,10 @@ export default function OverviewPage() {
                 <li>
                   <Link href="/admin/emails">Emails that failed</Link>
                   <strong className={t.emailsFailed > 0 ? 'adm-bad' : undefined}>{t.emailsFailed}</strong>
+                </li>
+                <li>
+                  <Link href="/admin/claims?status=PENDING">Payment claims waiting for the payer</Link>
+                  <strong className={t.claimsPending > 0 ? 'adm-bad' : undefined}>{t.claimsPending}</strong>
                 </li>
                 <li>
                   <Link href="/admin/users?verified=no">Unverified users</Link>
@@ -109,6 +128,25 @@ export default function OverviewPage() {
                   ))}
                 </ul>
               )}
+            </section>
+
+            <section className="adm-card">
+              <h2>Money still to settle</h2>
+              {data.outstanding.length === 0 ? (
+                <p className="adm-muted">Nothing outstanding.</p>
+              ) : (
+                <ul className="adm-list">
+                  {data.outstanding.map((row) => (
+                    <li key={row.currency}>
+                      <span>
+                        {row.currency} <span className="adm-muted">({formatMoney(row.collected, row.currency)} paid back)</span>
+                      </span>
+                      <strong>{formatMoney(row.pending, row.currency)}</strong>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <p className="adm-note">What people still owe whoever paid, across every group.</p>
             </section>
 
             <section className="adm-card">
