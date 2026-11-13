@@ -34,6 +34,8 @@ Wi-Fi (`http://<your-computer-ip>:3000`).
 | `/invite` | Target of the "you were invited" email. Opens the app |
 | `/open` | General "open the app" link |
 | `/verify-email?token=...` | Target of the verification email. Verifies the address, then offers to open the app |
+| `/p/<code>` | Short pay link made by the app. Loads the split from the backend. A plain link (no group or expense) has no live "I've paid" state; `?p=<n>` opens straight to person `n` |
+| `/pay#...` | Old long pay link with the whole split in the URL. Still opens, but the app only creates it when the backend could not be reached |
 | `/get-app` | Where visitors without the app land; links to the download page (`NEXT_PUBLIC_APK_URL`, default the Appverse page) |
 | `/api/verify-email` | Server route that passes the token to the SplitEase backend |
 | `/.well-known/assetlinks.json` | Android app-link verification (empty until fingerprints are set) |
