@@ -1736,3 +1736,38 @@ select:disabled {
   margin-right: 0.3em;
   vertical-align: -0.18em;
 }
+
+/* Privacy policy page */
+.privacy-page {
+  padding: 28px 0 48px;
+}
+.privacy-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.privacy-head h1 {
+  margin: 0;
+  font-size: clamp(26px, 5vw, 34px);
+}
+.privacy-frame {
+  display: block;
+  width: 100%;
+  height: calc(100dvh - 220px);
+  min-height: 520px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+}
+.footer-links {
+  display: flex;
+  gap: 18px;
+  font-size: 14px;
+}
+.footer-links a {
+  color: var(--muted);
+  text-decoration: underline;
+}

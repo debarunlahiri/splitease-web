@@ -21,3 +21,6 @@ export const APK_URL = (process.env.NEXT_PUBLIC_APK_URL ?? '').trim() || DEFAULT
 export const GET_APP_HREF = '/get-app';
 
 export const APP_NAME = 'SplitEase';
+
+/** The privacy policy, kept on the Lambrk site and shown inside this one too. */
+export const PRIVACY_POLICY_URL = 'https://www.lambrk.com/splitease/privacy-policy';

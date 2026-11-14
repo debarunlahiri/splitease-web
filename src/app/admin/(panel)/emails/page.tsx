@@ -31,7 +31,7 @@ export default function EmailsPage() {
 
   return (
     <>
-      <PageHeader title="Email queue" subtitle="Outgoing emails and their delivery state. Message bodies are never shown." />
+      <PageHeader title="Outgoing emails" subtitle="Every email we send and whether it arrived. Message bodies are never shown." />
       <div className="adm-filters">
         <select
           aria-label="Filter by status"
@@ -86,7 +86,7 @@ export default function EmailsPage() {
                             className="adm-btn adm-btn-small"
                             disabled={busy}
                             onClick={async () => {
-                              if (await run(() => api(`emails/${m.id}/retry`, { method: 'POST' }), 'Queued for another try')) await reload();
+                              if (await run(() => api(`emails/${m.id}/retry`, { method: 'POST' }), 'We will try sending it again')) await reload();
                             }}
                           >
                             Retry

@@ -61,7 +61,7 @@ const NAV: { href: string; label: string; icon: string; exact?: boolean; group?:
   { href: '/admin/invoices', label: 'Invoices', icon: 'subs' },
   { href: '/admin/announcements', label: 'Announcements', icon: 'megaphone', group: 'Reach out' },
   { href: '/admin/mail', label: 'Send email', icon: 'mail' },
-  { href: '/admin/emails', label: 'Email queue', icon: 'mail' },
+  { href: '/admin/emails', label: 'Outgoing emails', icon: 'mail' },
   { href: '/admin/ios-waitlist', label: 'iOS waitlist', icon: 'ios' },
   { href: '/admin/app-versions', label: 'App releases', icon: 'release', group: 'System' },
   { href: '/admin/translations', label: 'Translations', icon: 'mail' },

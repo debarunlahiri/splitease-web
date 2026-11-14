@@ -136,7 +136,7 @@ function MailComposer() {
   const ready = !!draft.subject.trim() && !!draft.heading.trim() && !!draft.body.trim() && placeholders === 0;
 
   async function sendTest() {
-    await run(() => api('mail/test', { method: 'POST', body: body() }), 'Test email queued to your address');
+    await run(() => api('mail/test', { method: 'POST', body: body() }), 'Test email sent to your address');
   }
 
   async function send() {
@@ -158,7 +158,7 @@ function MailComposer() {
     if (!ok) return;
     const done = await run(
       () => api<{ queued: number; smtpConfigured: boolean }>('mail/send', { method: 'POST', body: { ...body(), audience, userId: user?.id, templateId: templateId || undefined } }),
-      (r) => (r.smtpConfigured ? `${r.queued.toLocaleString()} emails queued for delivery` : `${r.queued} emails written to the server log: SMTP is not configured, so nothing was sent`),
+      (r) => (r.smtpConfigured ? `${r.queued.toLocaleString()} emails are on their way` : `${r.queued} emails written to the server log: SMTP is not configured, so nothing was sent`),
     );
     if (done) await history.reload();
   }

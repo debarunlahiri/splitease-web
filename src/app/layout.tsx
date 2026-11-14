@@ -69,6 +69,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </Link>
               <p>&copy; {new Date().getFullYear()} SplitEase</p>
             </div>
+            <nav className="footer-links" aria-label="Legal">
+              <Link href="/privacy">Privacy policy</Link>
+            </nav>
             <p>
               Powered by{' '}
               <a href="https://lambrk.com" rel="noopener">

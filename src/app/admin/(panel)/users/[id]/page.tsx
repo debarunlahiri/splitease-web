@@ -196,7 +196,7 @@ export default function UserDetailPage() {
                 type="button"
                 className="adm-btn"
                 disabled={busy}
-                onClick={() => void act(() => api(`users/${id}/resend-verification`, { method: 'POST' }), 'Verification email queued')}
+                onClick={() => void act(() => api(`users/${id}/resend-verification`, { method: 'POST' }), 'Verification email is on its way')}
               >
                 Resend verification
               </button>

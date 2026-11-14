@@ -25,8 +25,8 @@ function FeatureIcon({ children }: { children: ReactNode }) {
 
 const features: { title: string; text: string; icon: ReactNode }[] = [
   {
-    title: 'A group for every circle',
-    text: 'Create a group for a trip, your flat or a dinner, pick its currency and bring everyone in.',
+    title: 'A Split for every circle',
+    text: 'Make a Split for a trip, your flat or a dinner, pick its currency and bring everyone in.',
     icon: (
       <>
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -37,8 +37,8 @@ const features: { title: string; text: string; icon: ReactNode }[] = [
     ),
   },
   {
-    title: 'Invite by link or email',
-    text: 'Share an invite link on WhatsApp or send an email invitation. Lost it? Resend with one tap.',
+    title: 'Invite by link, email or phone',
+    text: 'Share an invite on WhatsApp, send an email, or add a friend by phone number even before they join.',
     icon: (
       <>
         <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
@@ -48,7 +48,7 @@ const features: { title: string; text: string; icon: ReactNode }[] = [
   },
   {
     title: 'Split it your way',
-    text: 'Divide a bill equally, by exact amounts or by percentage, between exactly the people involved.',
+    text: 'Divide a bill equally, by exact amounts, by percentage or by shares, between just the people involved.',
     icon: (
       <>
         <line x1="19" y1="5" x2="5" y2="19" />
@@ -59,7 +59,7 @@ const features: { title: string; text: string; icon: ReactNode }[] = [
   },
   {
     title: 'Pay back with fewer payments',
-    text: 'See who gets money back and who needs to pay, and get the shortest list of payments that squares everyone up.',
+    text: 'See who gets money back and who needs to pay, with the shortest list of payments that squares everyone up.',
     icon: (
       <>
         <line x1="18" y1="20" x2="18" y2="10" />
@@ -69,23 +69,59 @@ const features: { title: string; text: string; icon: ReactNode }[] = [
     ),
   },
   {
-    title: 'Works when you are offline',
-    text: 'Add a split without internet. It stays on your phone and goes online when you’re connected.',
+    title: 'Pay links with UPI',
+    text: 'Send a link on WhatsApp. Your friend opens it, sees their share and pays by UPI, with no app needed.',
+    icon: (
+      <>
+        <rect x="2" y="5" width="20" height="14" rx="3" />
+        <line x1="2" y1="10" x2="22" y2="10" />
+        <line x1="6" y1="15" x2="10" y2="15" />
+      </>
+    ),
+  },
+  {
+    title: 'Friendly reminders, free',
+    text: 'Get a ready-to-send message for WhatsApp or SMS, plus automatic nudges before and after the due date.',
+    icon: (
+      <>
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      </>
+    ),
+  },
+  {
+    title: 'Repeating splits',
+    text: 'Rent, Wi-Fi or a subscription? Set it to repeat weekly or monthly and it is added for you.',
+    icon: (
+      <>
+        <polyline points="17 1 21 5 17 9" />
+        <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+        <polyline points="7 23 3 19 7 15" />
+        <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+      </>
+    ),
+  },
+  {
+    title: 'Scan a receipt',
+    text: 'Take a photo of the bill and the total and items are filled in for you. Check them, then save.',
+    icon: (
+      <>
+        <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+        <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+        <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+        <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+        <line x1="7" y1="12" x2="17" y2="12" />
+      </>
+    ),
+  },
+  {
+    title: 'Works offline, in your language',
+    text: 'Add a split without internet and it goes online when you are connected. Use the app in English or Hindi.',
     icon: (
       <>
         <polyline points="23 4 23 10 17 10" />
         <polyline points="1 20 1 14 7 14" />
         <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-      </>
-    ),
-  },
-  {
-    title: 'Clear history and updates',
-    text: 'See every change to a split, and get a message when something is added or someone pays.',
-    icon: (
-      <>
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
       </>
     ),
   },
@@ -102,9 +138,29 @@ const faqs: { question: string; answer: string }[] = [
     answer: 'SplitEase is available for Android phones. The iPhone and iPad app is in development.',
   },
   {
+    question: 'How do I get paid back?',
+    answer:
+      'Send a pay link on WhatsApp or SMS. Your friend opens it, sees what they owe and pays by UPI. They do not need the app. SplitEase never touches the money, and you mark the split as paid when it arrives.',
+  },
+  {
+    question: 'Do reminders cost anything?',
+    answer:
+      'No. SplitEase gives you a friendly message ready to send from your own WhatsApp or SMS, and sends free automatic nudges to friends who use the app around the due date.',
+  },
+  {
+    question: 'Can a split repeat on its own?',
+    answer:
+      'Yes. Turn on Repeat when you add a split and choose weekly, monthly or another gap. It is added again on time for the same people.',
+  },
+  {
+    question: 'How does receipt scanning work?',
+    answer:
+      'Take a photo of a bill and SplitEase reads the total and items on your phone. Always check the numbers before saving, since printed receipts can be hard to read.',
+  },
+  {
     question: 'How do invitations work?',
     answer:
-      'Share an invite link or send an email invitation. Opening the link on your phone takes you straight into the app. If you do not have the app yet, install it and open the link again.',
+      'Share an invite link, send an email, or add a friend by phone number. Opening the link on your phone takes you straight into the app. If you do not have the app yet, install it and open the link again.',
   },
   {
     question: 'Can I add splits without internet?',
@@ -133,8 +189,7 @@ export default function Home() {
               <span>Keep it easy.</span>
             </h1>
             <p className="lead">
-              SplitEase keeps track of who paid, who owes and the fewest payments needed to pay everyone back
-              up. Made for trips, flatmates, dinners and everything you share.
+              SplitEase keeps track of who paid and who owes, sends friendly reminders for free and helps everyone pay back with the fewest payments. Made for trips, flatmates, dinners and everything you share.
             </p>
             <div className="actions">
               <a className="btn btn-primary" href={GET_APP_HREF}>
@@ -241,19 +296,19 @@ export default function Home() {
         <div className="container">
           <p className="kicker">The process</p>
           <h2>How it works</h2>
-          <p className="section-intro">From the first bill to everyone settled in three steps.</p>
+          <p className="section-intro">From the first bill to everyone paid back in three steps.</p>
           <ol className="grid-3 steps">
             <li className="step">
               <h3>Create Splits</h3>
-              <p>Give it a name, pick a currency and invite your friends with a link or email.</p>
+              <p>Give it a name, pick a currency and invite your friends by link, email or phone.</p>
             </li>
             <li className="step">
               <h3>Add a split</h3>
-              <p>Say who paid and how to share it. Everyone sees the same amounts.</p>
+              <p>Say who paid and how to share it, or scan the receipt. Everyone sees the same amounts.</p>
             </li>
             <li className="step">
               <h3>Pay back</h3>
-              <p>Follow the suggested payments, then mark them as paid.</p>
+              <p>Send a pay link or reminder on WhatsApp, then mark it as paid when the money arrives.</p>
             </li>
           </ol>
         </div>
@@ -299,7 +354,7 @@ export default function Home() {
         <div className="container">
           <div className="cta-box">
             <h2>Ready to split smarter?</h2>
-            <p>Create your first group in a minute and invite your friends.</p>
+            <p>Create your first Split in a minute and invite your friends.</p>
             <a className="btn" href={GET_APP_HREF}>
               Get the app <Icon name="arrow" size={18} />
             </a>
