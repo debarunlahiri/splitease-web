@@ -1,5 +1,6 @@
 'use client';
 
+import Icon from '@/components/Icon';
 import Link from 'next/link';
 import { useState } from 'react';
 import { formatDate, useApi, useDebounced, type Page } from '@/components/admin/api';
@@ -85,7 +86,7 @@ export default function UsersPage() {
                         {u.suspended && <Badge tone="bad">Suspended</Badge>}
                         {u.premium && <Badge tone="good">Premium</Badge>}
                         {u.isContact && <Badge tone="warn">Contact</Badge>}
-                        {u.upiId && <Badge tone={u.upiVerified ? 'good' : 'neutral'}>{u.upiVerified ? 'UPI ✓' : 'UPI'}</Badge>}
+                        {u.upiId && <Badge tone={u.upiVerified ? 'good' : 'neutral'}>UPI {u.upiVerified && <Icon name="check" size={12} inline />}</Badge>}
                         {u.google && <Badge>Google</Badge>}
                       </td>
                       <td className="num">{u.groups}</td>

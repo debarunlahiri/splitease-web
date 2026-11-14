@@ -6,6 +6,7 @@ import Link from 'next/link';
 import QRCode from 'qrcode';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { GET_APP_HREF } from '@/lib/config';
+import { detectPlatform } from '@/lib/device';
 import { decodePayload, dueLabel, encodeBase64Url, formatMoney, type PayPayload, type PayPerson, upiLink } from '@/lib/pay';
 
 type Marks = Record<string, string>; // person index -> amount they said they paid
@@ -17,8 +18,32 @@ export default function PayClient({ code }: { code?: string }) {
   const [hash, setHash] = useState('');
   const [marks, setMarks] = useState<Marks>({});
   const [open, setOpen] = useState<number[] | null>(null);
-  const [picked, setPicked] = useState<number[]>([]);
+  // A link made for one person (?p=2) highlights their row instead of opening a payment by itself.
+  const [mine, setMine] = useState<number | null>(null);
   const personalHandled = useRef(false);
+  // The first thing a visitor sees is the "get the app" sheet; payment comes after they continue on the web.
+  const [promptDone, setPromptDone] = useState(true);
+
+  useEffect(() => {
+    // The app is Android-only, so iPhone visitors go straight to paying.
+    if (detectPlatform(navigator.userAgent) === 'ios') return;
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem('splitease-app-prompt') === '1';
+    } catch {
+      // Storage can be blocked; the sheet is shown.
+    }
+    if (!seen) setPromptDone(false);
+  }, []);
+
+  function continueOnWeb() {
+    setPromptDone(true);
+    try {
+      sessionStorage.setItem('splitease-app-prompt', '1');
+    } catch {
+      // Not remembered; fine.
+    }
+  }
 
   useEffect(() => {
     // Short links (/p/<code>) load the split from the server; old /pay#... links carry it in the URL.
@@ -47,15 +72,20 @@ export default function PayClient({ code }: { code?: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code]);
 
-  // A link made for one person (?p=2) opens straight to their share, once.
+  // A link made for one person (?p=2) opens that person's payment sheet (after the app prompt) and marks their row.
   useEffect(() => {
     if (!payload || personalHandled.current) return;
     personalHandled.current = true;
-    const wanted = Number(new URLSearchParams(window.location.search).get('p'));
+    const param = new URLSearchParams(window.location.search).get('p');
+    // No ?p= means a link for everyone: Number(null) would be 0 and wrongly pick the first person.
+    if (param === null || !/^\d{1,3}$/.test(param)) return;
+    const wanted = Number(param);
     if (!Number.isInteger(wanted) || wanted < 0 || wanted >= payload.t.length) return;
+    setMine(wanted);
     const person = payload.t[wanted];
     const state = payload.claims ? (person.s ?? 'UNPAID') : 'UNPAID';
     if (payload.c === 'INR' && payload.u && (state === 'UNPAID' || state === 'NOT_RECEIVED')) setOpen([wanted]);
+    window.setTimeout(() => document.getElementById(`pay-person-${wanted}`)?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300);
   }, [payload]);
 
   /** Fetches the split and each person's live state from the server. */
@@ -137,9 +167,9 @@ export default function PayClient({ code }: { code?: string }) {
   return (
     <div className="pay-page">
       <section className="pay-hero">
-        <p className="pay-hero-label">{payload.n} is collecting</p>
+        <p className="pay-hero-label">{payload.n} is asking for</p>
         <p className="pay-hero-amount">{formatMoney(total.toFixed(2), payload.c)}</p>
-        <p className="pay-hero-for">for {payload.d || 'a shared expense'}</p>
+        <p className="pay-hero-for">for {payload.d || 'a shared split'}</p>
         <div className="pay-chips">
           <span>
             {payload.t.length} {payload.t.length === 1 ? 'person' : 'people'}
@@ -154,7 +184,7 @@ export default function PayClient({ code }: { code?: string }) {
           <span style={{ width: `${progress}%` }} />
         </div>
         <p className="pay-progress-text">
-          {paidCount} of {payload.t.length} paid · {formatMoney(collected.toFixed(2), payload.c)} collected
+          {paidCount} of {payload.t.length} paid · {formatMoney(collected.toFixed(2), payload.c)} received
         </p>
       </section>
 
@@ -177,21 +207,7 @@ export default function PayClient({ code }: { code?: string }) {
 
       <div className="pay-titlebar">
         <h2 className="pay-title">{upi ? 'Tap your name to pay' : 'Who owes what'}</h2>
-        {upi && unpaid.length > 1 && (
-          <button
-            type="button"
-            className="pay-selectall"
-            onClick={() => setPicked(picked.length === unpaid.length ? [] : unpaid)}
-          >
-            {picked.length === unpaid.length ? 'Clear' : 'Select all'}
-          </button>
-        )}
       </div>
-      {upi && unpaid.length > 1 && picked.length === 0 && (
-        <button type="button" className="btn btn-primary pay-all" onClick={() => setOpen(unpaid)}>
-          Pay everyone at once · {formatMoney(sumOf(unpaid), payload.c)}
-        </button>
-      )}
       <ul className="pay-people">
         {payload.t.map((person, index) => {
           const state = stateOf(index);
@@ -201,11 +217,11 @@ export default function PayClient({ code }: { code?: string }) {
           const canPay = state === 'UNPAID' || rejected;
           const caption = paid
             ? live
-              ? `Paid · confirmed by ${payload.n}`
+              ? `Paid · ${payload.n} has confirmed`
               : `Marked paid · ${formatMoney(marks[index] ?? person.a, payload.c)}`
             : waiting
               ? live
-                ? `Sent to ${payload.n} · waiting for them to confirm`
+                ? `Told ${payload.n} · waiting for them to confirm`
                 : `Marked paid on this phone · ${formatMoney(marks[index], payload.c)}`
               : rejected
                 ? `${payload.n} hasn't received this yet. Check and pay again.`
@@ -219,10 +235,11 @@ export default function PayClient({ code }: { code?: string }) {
                 style={{ background: rejected ? 'hsl(8 62% 40%)' : avatarColor(person.n) }}
                 aria-hidden
               >
-                {paid ? '✓' : waiting ? '…' : rejected ? '!' : person.n.slice(0, 1).toUpperCase()}
+                {paid ? <Icon name="check" size={18} /> : waiting ? <Icon name="clock" size={18} /> : rejected ? <Icon name="warning" size={18} /> : person.n.slice(0, 1).toUpperCase()}
               </span>
               <span className="pay-name">
                 {person.n}
+                {mine === index && <em className="pay-you">Your share</em>}
                 <small className={rejected || (canPay && person.d && dueLabel(person.d).overdue) ? 'is-overdue' : ''}>
                   {caption}
                 </small>
@@ -231,21 +248,12 @@ export default function PayClient({ code }: { code?: string }) {
               {upi && canPay && <Icon name="arrow" size={16} />}
             </>
           );
-          const checked = picked.includes(index);
           return (
-            <li key={`${person.n}-${index}`} className={`${paid ? 'is-paid' : ''} ${rejected ? 'is-rejected' : ''} ${checked ? 'is-picked' : ''}`}>
-              {upi && canPay && unpaid.length > 1 && (
-                <button
-                  type="button"
-                  className={`pay-check ${checked ? 'on' : ''}`}
-                  role="checkbox"
-                  aria-checked={checked}
-                  aria-label={`Select ${person.n}`}
-                  onClick={() => setPicked(checked ? picked.filter((i) => i !== index) : [...picked, index])}
-                >
-                  <span className="pay-box">{checked ? '✓' : ''}</span>
-                </button>
-              )}
+            <li
+              key={`${person.n}-${index}`}
+              id={`pay-person-${index}`}
+              className={`${paid ? 'is-paid' : ''} ${rejected ? 'is-rejected' : ''} ${mine === index ? 'is-mine' : ''}`}
+            >
               {upi && canPay ? (
                 <button type="button" className="pay-main" onClick={() => setOpen([index])}>
                   {content}
@@ -253,7 +261,7 @@ export default function PayClient({ code }: { code?: string }) {
               ) : (
                 <div className="pay-row">{content}</div>
               )}
-              {live && code && (state === 'PAID' || Number(person.p ?? 0) > 0) && (
+              {live && code && payload.invoices !== false && (state === 'PAID' || Number(person.p ?? 0) > 0) && (
                 <a className="pay-invoice" href={`/p/${encodeURIComponent(code)}/invoice/${index}`}>
                   {paid ? 'Download invoice' : 'Download receipt'}
                 </a>
@@ -264,22 +272,17 @@ export default function PayClient({ code }: { code?: string }) {
       </ul>
 
       <p className="pay-foot">
-        Track every shared expense and settle up in one tap. <Link href={GET_APP_HREF}>Get SplitEase</Link>
+        Share costs with friends and pay back in one tap. <Link href={GET_APP_HREF}>Get SplitEase</Link>
       </p>
 
-      {upi && picked.length > 0 && open === null && (
-        <div className="pay-selectbar">
-          <button type="button" className="btn btn-primary" onClick={() => setOpen(picked)}>
-            Pay {picked.length} selected · {formatMoney(sumOf(picked), payload.c)}
-          </button>
-        </div>
-      )}
+      {!promptDone && <AppPromptSheet onContinue={continueOnWeb} />}
 
-      {upi && open !== null && (
+      {promptDone && upi && open !== null && (
         <PaySheet
           payload={payload}
           upi={upi}
           who={open.map((i) => payload.t[i].n)}
+          lines={open.flatMap((i) => (payload.t[i].i ?? []).map((item) => ({ ...item, who: payload.t[i].n })))}
           amount={sumOf(open)}
           single={open.length === 1}
           again={open.some((i) => stateOf(i) === 'NOT_RECEIVED')}
@@ -290,7 +293,6 @@ export default function PayClient({ code }: { code?: string }) {
               open.length === 1 ? [[open[0], amount]] : open.map((i): [number, string] => [i, owedNow(i)]);
             void sendClaims(entries, open.length > 1 || amount === owedNow(open[0]));
             mark(entries);
-            setPicked([]);
             setOpen(null);
           }}
         />
@@ -306,10 +308,58 @@ function avatarColor(name: string): string {
   return `hsl(${hash} 38% 34%)`;
 }
 
+/** Shown first: nudges people to the app, with the web page one tap away. */
+function AppPromptSheet({ onContinue }: { onContinue: () => void }) {
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && onContinue();
+    window.addEventListener('keydown', onKey);
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = previous;
+    };
+  }, [onContinue]);
+  return (
+    <div className="sheet-backdrop" onClick={onContinue}>
+      <div className="sheet sheet-app" role="dialog" aria-modal="true" aria-label="Get the SplitEase app" onClick={(e) => e.stopPropagation()}>
+        <span className="sheet-grabber" aria-hidden />
+        <div className="sheet-body">
+          <span className="sheet-app-icon" aria-hidden>
+            <Icon name="phone" size={28} />
+          </span>
+          <h2 className="sheet-app-title">Pay faster in the app</h2>
+          <p className="sheet-app-sub">Everything in one place, free on Android.</p>
+          <ul className="sheet-app-perks">
+            <li>
+              <Icon name="check" size={16} /> Pay in one tap
+            </li>
+            <li>
+              <Icon name="check" size={16} /> Keep track of every shared cost
+            </li>
+            <li>
+              <Icon name="check" size={16} /> Get reminders before it&apos;s due
+            </li>
+          </ul>
+        </div>
+        <div className="sheet-actions sheet-app-actions">
+          <Link className="btn btn-primary" href={GET_APP_HREF}>
+            Download app
+          </Link>
+          <button type="button" className="sheet-app-web" onClick={onContinue}>
+            Continue on web
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function PaySheet({
   payload,
   upi,
   who,
+  lines,
   amount,
   single,
   again,
@@ -319,6 +369,8 @@ function PaySheet({
   payload: PayPayload;
   upi: string;
   who: string[];
+  /** The splits this payment covers (whole-group links). */
+  lines: { who: string; d: string; a: string; t?: string }[];
   amount: string;
   single: boolean;
   again: boolean;
@@ -365,9 +417,18 @@ function PaySheet({
     <div className="sheet-backdrop" onClick={onClose}>
       <div className="sheet" role="dialog" aria-modal="true" aria-label={`Pay ${person.n}'s share`} onClick={(e) => e.stopPropagation()}>
         <div className="sheet-head">
-          <p className="sheet-who">{single ? `${person.n} pays ${payload.n}` : `${who.join(', ')} → ${payload.n}`}</p>
+          <p className="sheet-who">
+            {single ? (
+              `${person.n} pays ${payload.n}`
+            ) : (
+              <>
+                {who.join(', ')} <Icon name="arrow" size={14} inline />
+                {payload.n}
+              </>
+            )}
+          </p>
           <button type="button" className="sheet-close" onClick={onClose} aria-label="Close">
-            ×
+            <Icon name="close" size={18} />
           </button>
           <p className="sheet-amount">{formatMoney(person.a, payload.c)}</p>
         </div>
@@ -376,6 +437,28 @@ function PaySheet({
             <p className="sheet-warn">
               {payload.n} hasn&apos;t received your last payment. Check your UPI app and bank first, then pay again if needed.
             </p>
+          )}
+          {lines.length > 0 && (
+            <div className="sheet-items">
+              <p className="sheet-items-title">
+                Paying for {lines.length} {lines.length === 1 ? 'split' : 'splits'}
+              </p>
+              <ul>
+                {lines.map((line, index) => (
+                  <li key={`${line.who}-${line.d}-${index}`}>
+                    <span>
+                      {line.d}
+                      <small>
+                        {[!single ? line.who : '', line.t ? new Date(`${line.t}T00:00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) : '']
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </small>
+                    </span>
+                    <strong>{formatMoney(line.a, payload.c)}</strong>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
           <a className="btn btn-primary sheet-open" href={link}>
             Open UPI app
@@ -405,16 +488,30 @@ function PaySheet({
           </div>
           <div className="sheet-grid">
             <button type="button" className="btn btn-ghost" onClick={() => copy('id', upi)}>
-              {copied === 'id' ? 'Copied ✓' : 'Copy UPI ID'}
+              {copied === 'id' ? (
+                <>
+                  <Icon name="check" size={16} inline />
+                  Copied
+                </>
+              ) : (
+                'Copy UPI ID'
+              )}
             </button>
             <button type="button" className="btn btn-ghost" onClick={() => copy('amount', person.a)}>
-              {copied === 'amount' ? 'Copied ✓' : 'Copy amount'}
+              {copied === 'amount' ? (
+                <>
+                  <Icon name="check" size={16} inline />
+                  Copied
+                </>
+              ) : (
+                'Copy amount'
+              )}
             </button>
           </div>
           <p className="sheet-note">
             {payload.claims
-              ? `${payload.n} is told you paid and confirms it once the money shows up in their bank app.`
-              : `Marking it paid only saves it on your phone. ${payload.n} confirms the payment in their bank app.`}
+              ? `${payload.n} is told you paid, and confirms it once the money reaches them.`
+              : `Marking it paid only saves it on your phone. ${payload.n} confirms once the money reaches them.`}
           </p>
         </div>
 

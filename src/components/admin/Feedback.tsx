@@ -1,5 +1,6 @@
 'use client';
 
+import Icon from '@/components/Icon';
 import {
   createContext,
   useCallback,
@@ -70,7 +71,7 @@ export function Modal({
         <div className="adm-modal-head">
           <h2 id={titleId}>{title}</h2>
           <button type="button" className="adm-icon-btn" aria-label="Close" data-close onClick={onClose}>
-            ×
+            <Icon name="close" size={16} />
           </button>
         </div>
         <div className="adm-modal-body">{children}</div>

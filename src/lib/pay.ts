@@ -2,6 +2,16 @@
  * Pay links look like /pay#<payload>. The payload is base64url JSON kept in the URL fragment, so it
  * never reaches a server or a log, and the page works for people who haven't installed the app.
  */
+/** One expense a person still owes for (whole-group links only). */
+export interface PayItem {
+  /** What it was for */
+  d: string;
+  /** Amount still owed for it */
+  a: string;
+  /** Expense date, YYYY-MM-DD */
+  t?: string;
+}
+
 export interface PayPerson {
   /** Name */
   n: string;
@@ -15,6 +25,8 @@ export interface PayPerson {
   l?: string;
   /** Amount confirmed paid */
   p?: string;
+  /** The expenses behind the amount, when the link covers a whole group */
+  i?: PayItem[];
 }
 
 export interface PayPayload {
@@ -33,6 +45,8 @@ export interface PayPayload {
   b?: string;
   /** The server can pass "I've paid" on to the payer (only for links made by the app). */
   claims?: boolean;
+  /** False when the group turned invoices off. */
+  invoices?: boolean;
 }
 
 const UPI_ID = /^[a-z0-9][a-z0-9._-]{1,99}@[a-z][a-z0-9]{1,31}$/i;
@@ -55,6 +69,16 @@ export function decodePayload(fragment: string): PayPayload | null {
         s: ['UNPAID', 'CLAIMED', 'PAID', 'NOT_RECEIVED'].includes(p.s as string) ? p.s : undefined,
         l: typeof p.l === 'string' && AMOUNT.test(p.l) ? p.l : undefined,
         p: typeof p.p === 'string' && AMOUNT.test(p.p) ? p.p : undefined,
+        i: Array.isArray(p.i)
+          ? p.i
+              .filter((it: PayItem) => typeof it?.d === 'string' && typeof it?.a === 'string' && AMOUNT.test(it.a))
+              .slice(0, 50)
+              .map((it: PayItem) => ({
+                d: it.d.slice(0, 160),
+                a: it.a,
+                t: typeof it.t === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(it.t) ? it.t : undefined,
+              }))
+          : undefined,
       }));
     return {
       v: 1,
@@ -64,6 +88,7 @@ export function decodePayload(fragment: string): PayPayload | null {
       u: typeof data.u === 'string' && UPI_ID.test(data.u) ? data.u : undefined,
       t: people,
       claims: data.claims === true,
+      invoices: data.invoices !== false,
       b: typeof data.b === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(data.b) ? data.b : undefined,
     };
   } catch {

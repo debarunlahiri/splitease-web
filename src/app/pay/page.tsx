@@ -3,7 +3,7 @@ import PayClient from '@/components/PayClient';
 
 export const metadata: Metadata = {
   title: 'Pay your share',
-  description: 'See what you owe for a shared expense and pay by UPI.',
+  description: 'See what you owe for a shared split and pay by UPI.',
   robots: { index: false },
   referrer: 'no-referrer',
 };

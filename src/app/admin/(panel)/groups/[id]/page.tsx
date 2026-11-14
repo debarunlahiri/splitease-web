@@ -1,5 +1,6 @@
 'use client';
 
+import Icon from '@/components/Icon';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -98,7 +99,14 @@ function GroupExpenses({ groupId }: { groupId: string }) {
                       </td>
                       <td>{e.paidBy ?? '—'}</td>
                       <td>{e.date}</td>
-                      <td>{e.attachments > 0 ? `📎 ${e.attachments}` : '—'}</td>
+                      <td>{e.attachments > 0 ? (
+                          <>
+                            <Icon name="clip" size={14} inline />
+                            {e.attachments}
+                          </>
+                        ) : (
+                          '—'
+                        )}</td>
                       <td className="num">{formatMoney(e.amount, e.currency)}</td>
                     </tr>
                   ))}
@@ -124,7 +132,7 @@ export default function GroupDetailPage() {
   return (
     <>
       <p className="adm-crumb">
-        <Link href="/admin/groups">← Groups</Link>
+        <Link href="/admin/groups"><Icon name="back" size={14} inline />Groups</Link>
       </p>
       <Status loading={loading && !data} error={error} onRetry={reload} />
       {data && (

@@ -1,5 +1,6 @@
 'use client';
 
+import Icon from '@/components/Icon';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -79,7 +80,7 @@ export default function ExpenseDetailPage() {
     return (
       <>
         <p className="adm-crumb">
-          <Link href="/admin/groups">← Groups</Link>
+          <Link href="/admin/groups"><Icon name="back" size={14} inline />Groups</Link>
         </p>
         <Status loading={loading} error={error} onRetry={reload} />
       </>
@@ -91,7 +92,7 @@ export default function ExpenseDetailPage() {
   return (
     <>
       <p className="adm-crumb">
-        <Link href={`/admin/groups/${data.groupId}`}>← {data.groupName}</Link>
+        <Link href={`/admin/groups/${data.groupId}`}><Icon name="back" size={14} inline />{data.groupName}</Link>
       </p>
       <PageHeader
         title={data.description}
@@ -226,7 +227,13 @@ export default function ExpenseDetailPage() {
                 </span>
                 <span className="adm-muted">
                   {formatDate(c.createdAt, true)}
-                  {c.resolvedAt ? ` → ${formatDate(c.resolvedAt, true)}` : ''}
+                  {c.resolvedAt && (
+                    <>
+                      {' '}
+                      <Icon name="arrow" size={12} inline />
+                      {formatDate(c.resolvedAt, true)}
+                    </>
+                  )}
                 </span>
               </li>
             ))}
@@ -257,7 +264,12 @@ export default function ExpenseDetailPage() {
                       <li key={c.field}>
                         <span className="adm-muted">{c.label}</span>{' '}
                         {c.from && <s>{c.from}</s>}
-                        {c.from && c.to && ' → '}
+                        {c.from && c.to && (
+                          <>
+                            {' '}
+                            <Icon name="arrow" size={12} inline />
+                          </>
+                        )}
                         {c.to && <strong>{c.to}</strong>}
                       </li>
                     ))}

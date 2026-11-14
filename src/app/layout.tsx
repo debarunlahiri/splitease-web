@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { Analytics } from '@vercel/analytics/next';
 import { GET_APP_HREF, SITE_URL } from '@/lib/config';
 import Icon from '@/components/Icon';
 import SiteShell from '@/components/SiteShell';
@@ -10,11 +11,11 @@ import './globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'SplitEase: split expenses with friends',
+    default: 'SplitEase: split costs with friends',
     template: '%s | SplitEase',
   },
   description:
-    'SplitEase tracks who paid, who owes and the fewest payments to settle up. Perfect for trips, flatmates and shared costs.',
+    'SplitEase keeps track of who paid and who owes, and shows the simplest way to pay everyone back. Perfect for trips, flatmates and shared costs.',
   icons: {
     icon: BRAND_LOGO_SRC,
     apple: BRAND_LOGO_SRC,
@@ -22,8 +23,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'SplitEase',
-    title: 'SplitEase: split expenses with friends',
-    description: 'Track shared expenses, see who owes what and settle up with the fewest payments.',
+    title: 'SplitEase: split costs with friends',
+    description: 'Share costs with friends, see who owes what and pay back with the fewest payments.',
     images: [{ url: BRAND_LOGO_SRC, width: 512, height: 512, alt: 'SplitEase logo' }],
   },
 };
@@ -36,7 +37,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    // suppressHydrationWarning: the admin theme script sets data-adm-theme on <html> before React loads.
+    <html lang="en" suppressHydrationWarning>
       <body>
         <SiteShell
           header={
@@ -79,6 +81,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         >
           {children}
         </SiteShell>
+        <Analytics />
       </body>
     </html>
   );

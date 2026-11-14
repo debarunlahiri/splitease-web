@@ -58,8 +58,8 @@ const features: { title: string; text: string; icon: ReactNode }[] = [
     ),
   },
   {
-    title: 'Settle up with fewer payments',
-    text: 'See who is owed and who owes at a glance, and get the shortest list of payments that clears everything.',
+    title: 'Pay back with fewer payments',
+    text: 'See who gets money back and who needs to pay, and get the shortest list of payments that squares everyone up.',
     icon: (
       <>
         <line x1="18" y1="20" x2="18" y2="10" />
@@ -70,7 +70,7 @@ const features: { title: string; text: string; icon: ReactNode }[] = [
   },
   {
     title: 'Works when you are offline',
-    text: 'Add an expense without a connection. It is kept on your phone and syncs when you are back online.',
+    text: 'Add a split without internet. It stays on your phone and goes online when you’re connected.',
     icon: (
       <>
         <polyline points="23 4 23 10 17 10" />
@@ -81,7 +81,7 @@ const features: { title: string; text: string; icon: ReactNode }[] = [
   },
   {
     title: 'Clear history and updates',
-    text: 'Every change to an expense is recorded, and you are notified when something is added or a payment is made.',
+    text: 'See every change to a split, and get a message when something is added or someone pays.',
     icon: (
       <>
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -95,7 +95,7 @@ const faqs: { question: string; answer: string }[] = [
   {
     question: 'Does SplitEase move money?',
     answer:
-      'No. SplitEase keeps track of expenses and records payments you make yourselves, in cash or with any payment app. No money is transferred through SplitEase.',
+      'No. SplitEase helps you keep track of who owes what. You pay each other yourselves, in cash or with any payment app. No money moves through SplitEase.',
   },
   {
     question: 'Which phones does it run on?',
@@ -107,9 +107,9 @@ const faqs: { question: string; answer: string }[] = [
       'Share an invite link or send an email invitation. Opening the link on your phone takes you straight into the app. If you do not have the app yet, install it and open the link again.',
   },
   {
-    question: 'Can I add expenses without internet?',
+    question: 'Can I add splits without internet?',
     answer:
-      'Yes. Expenses you add offline are saved on your phone and sync automatically once you are connected.',
+      'Yes. Splits you add offline are saved on your phone and go online automatically once you’re connected.',
   },
   {
     question: 'Does it cost anything?',
@@ -125,15 +125,15 @@ export default function Home() {
         <div className="container hero-grid">
           <div className="hero-copy">
             <span className="eyebrow">
-              <BrandLogo size={20} /> Shared expenses, simplified
+              <BrandLogo size={20} /> Sharing costs, made simple
             </span>
             <h1>
-              Split expenses.
+              Split costs.
               <br />
               <span>Keep it easy.</span>
             </h1>
             <p className="lead">
-              SplitEase keeps track of who paid, who owes and the fewest payments needed to settle
+              SplitEase keeps track of who paid, who owes and the fewest payments needed to pay everyone back
               up. Made for trips, flatmates, dinners and everything you share.
             </p>
             <div className="actions">
@@ -164,7 +164,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="screen-hero">
-                  <small>Your balance</small>
+                  <small>Where you stand</small>
                   <strong>₹1,250.00</strong>
                   <span>You get back</span>
                 </div>
@@ -210,10 +210,10 @@ export default function Home() {
                 <span>
                   <Icon name="check" size={17} />
                 </span>{' '}
-                Just two payments to settle up
+                Just two payments to pay everyone back
               </div>
             </div>
-            <figcaption>Illustrative group with sample balances</figcaption>
+            <figcaption>Example Splits with sample amounts</figcaption>
           </figure>
         </div>
       </section>
@@ -244,16 +244,16 @@ export default function Home() {
           <p className="section-intro">From the first bill to everyone settled in three steps.</p>
           <ol className="grid-3 steps">
             <li className="step">
-              <h3>Create a group</h3>
-              <p>Name it, choose a currency and invite your friends by link or email.</p>
+              <h3>Create Splits</h3>
+              <p>Give it a name, pick a currency and invite your friends with a link or email.</p>
             </li>
             <li className="step">
-              <h3>Add expenses</h3>
-              <p>Record who paid and how to split it. Everyone sees the same numbers.</p>
+              <h3>Add a split</h3>
+              <p>Say who paid and how to share it. Everyone sees the same amounts.</p>
             </li>
             <li className="step">
-              <h3>Settle up</h3>
-              <p>Follow the suggested payments, then mark them as paid to clear the balance.</p>
+              <h3>Pay back</h3>
+              <p>Follow the suggested payments, then mark them as paid.</p>
             </li>
           </ol>
         </div>

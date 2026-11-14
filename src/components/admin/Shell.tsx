@@ -64,6 +64,8 @@ const NAV: { href: string; label: string; icon: string; exact?: boolean; group?:
   { href: '/admin/emails', label: 'Email queue', icon: 'mail' },
   { href: '/admin/ios-waitlist', label: 'iOS waitlist', icon: 'ios' },
   { href: '/admin/app-versions', label: 'App releases', icon: 'release', group: 'System' },
+  { href: '/admin/translations', label: 'Translations', icon: 'mail' },
+  { href: '/admin/settings', label: 'Settings', icon: 'admins' },
   { href: '/admin/activity', label: 'Activity log', icon: 'activity' },
   { href: '/admin/admins', label: 'Admins', icon: 'admins' },
 ];

@@ -5,6 +5,15 @@ const shapes = {
   down: <path d="M12 4v15m-6-6 6 6 6-6" />,
   chevron: <path d="m6 9 6 6 6-6" />,
   check: <path d="m5 12 4 4L19 6" />,
+  close: <path d="M6 6l12 12M18 6 6 18" />,
+  back: <path d="M20 12H5m6-6-6 6 6 6" />,
+  clip: <path d="m21 11-8.6 8.6a5 5 0 0 1-7.1-7.1l9-9a3.5 3.5 0 0 1 5 5l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5" />,
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
   phone: (
     <>
       <rect x="6" y="2" width="12" height="20" rx="3" />
@@ -44,9 +53,10 @@ const shapes = {
 
 export type IconName = keyof typeof shapes;
 
-export default function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
+export default function Icon({ name, size = 20, inline = false }: { name: IconName; size?: number; inline?: boolean }) {
   return (
     <svg
+      className={inline ? 'ico-inline' : undefined}
       aria-hidden="true"
       width={size}
       height={size}

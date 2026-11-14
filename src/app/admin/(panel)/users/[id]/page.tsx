@@ -1,5 +1,6 @@
 'use client';
 
+import Icon from '@/components/Icon';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
@@ -18,6 +19,9 @@ interface UserDetail {
   google: boolean;
   upiId: string | null;
   upiVerifiedAt: string | null;
+  phone: string | null;
+  phoneVerifiedAt: string | null;
+  phoneVerification: 'DEFAULT' | 'REQUIRED' | 'NOT_REQUIRED';
   isContact: boolean;
   contact: { email: string | null; phone: string | null; addedBy: string | null } | null;
   claimsMade: number;
@@ -61,7 +65,7 @@ export default function UserDetailPage() {
     return (
       <>
         <p className="adm-crumb">
-          <Link href="/admin/users">← Users</Link>
+          <Link href="/admin/users"><Icon name="back" size={14} inline />Users</Link>
         </p>
         <Status loading={loading} error={error} onRetry={reload} />
       </>
@@ -73,7 +77,7 @@ export default function UserDetailPage() {
   return (
     <>
       <p className="adm-crumb">
-        <Link href="/admin/users">← Users</Link>
+        <Link href="/admin/users"><Icon name="back" size={14} inline />Users</Link>
       </p>
       <PageHeader
         title={data.displayName}
@@ -117,6 +121,11 @@ export default function UserDetailPage() {
             hint="still unpaid, all groups"
           />
         ))}
+        <Stat
+          label="Phone"
+          value={data.phone ?? '—'}
+          hint={data.phone ? (data.phoneVerifiedAt ? `verified ${formatDate(data.phoneVerifiedAt)}` : 'not verified') : undefined}
+        />
         <Stat label="Payment claims" value={`${data.claimsMade} made`} hint={`${data.claimsReceived} received · ${data.templates} templates`} />
       </div>
 
@@ -144,6 +153,25 @@ export default function UserDetailPage() {
           </ul>
         </section>
       )}
+
+      <section className="adm-card">
+        <h2>Phone number verification</h2>
+        <p className="adm-muted">
+          Whether this person must confirm their number with an SMS code. &quot;Follow the app setting&quot; uses the switch
+          under Settings.
+        </p>
+        <select
+          value={data.phoneVerification}
+          disabled={busy}
+          onChange={(e) =>
+            act(() => api(`users/${data.id}/phone-verification`, { method: 'PATCH', body: { mode: e.target.value } }), 'Saved')
+          }
+        >
+          <option value="DEFAULT">Follow the app setting</option>
+          <option value="REQUIRED">Always require a code</option>
+          <option value="NOT_REQUIRED">Never require a code</option>
+        </select>
+      </section>
 
       <section className="adm-card">
         <h2>Actions</h2>
